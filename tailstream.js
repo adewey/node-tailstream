@@ -100,8 +100,13 @@ TailStream.prototype.poll = function() {
       return self.open();
     }
 
-    if (stat.size > self._offset)
+    if (stat.size > self._offset) {
       return self.fill(doNextAction);
+    } else if (stat.size < self._offset) {
+      self.emit('truncate');
+      self._offset = 0;
+      return self.fill(doNextAction);     
+    }
 
     doNextAction();
   }
